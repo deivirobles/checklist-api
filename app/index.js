@@ -3,6 +3,9 @@ import {router as api} from "./api/v1/index.js";
 
 export const app = express();
 
+//parse json request body
+app.use(express.json());
+
 //setup router and routes
 app.use('/api/v1', api);
 app.use("/api", api);

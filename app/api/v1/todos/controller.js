@@ -1,7 +1,11 @@
 import { meta } from "@eslint/js";
 
 export const create = (req, res, next) =>{
-    res.json({})
+    const {body = {}} = req;
+
+    res.json({
+        data: body
+    });
 };
 
 export const all = (req, res, next) =>{

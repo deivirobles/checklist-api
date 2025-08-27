@@ -7,7 +7,13 @@ export const all = (req, res, next) =>{
 };
 
 export const read = (req, res, next) =>{
-    res.json({})
+    const {params = {}} = req;
+    const {id = ''} = params;
+    res.json({
+        data:{
+            id
+        }
+    });
 };
 
 export const update = (req, res, next) =>{

@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import * as controler from './controller.js';
 
 //eslint-disable-next-line new-cap
 export const router = Router();
@@ -11,13 +12,12 @@ export const router = Router();
     *   /api/todos/:id DELETE   -DELETE
 */ 
 
-router
-    .route('/')
-    .get('/', (req, res,next) => {})
-    .post('/', (req, res,next) => {})
+router.route('/')
+    .post(controler.create)
+    .get(controler.all)
 
 router
     .route('/:id')
-    .get((req, res, next) => {})
-    .put((req, res, next) => {})
-    .delete((req, res, next) => {});
+    .get(controler.read)
+    .put(controler.update)
+    .delete(controler.remove);

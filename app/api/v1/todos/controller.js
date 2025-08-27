@@ -1,9 +1,19 @@
+import { meta } from "@eslint/js";
+
 export const create = (req, res, next) =>{
     res.json({})
 };
 
 export const all = (req, res, next) =>{
-    res.json({})
+    const {query = {}} = req;
+    const {limit = 10, offset = 0} = query;
+
+    res.json({
+        meta:{
+            limit,
+            offset,
+        },
+    });
 };
 
 export const read = (req, res, next) =>{

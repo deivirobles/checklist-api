@@ -1,6 +1,10 @@
 import express from "express";
+import {router as api} from "./api/index.js";
 
 export const app = express();
+
+//setup router and routes
+app.use("/api", api);
 
 app.get("/", (req, res) => {
   res.json({

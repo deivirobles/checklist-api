@@ -72,14 +72,16 @@ export const read = async (req, res, next) =>{
 };
 
 export const update = async (req, res, next) =>{
-    
+    const {body = {}, params = {}} = req;
+    const {id = ''} = params;
+
     try{
         const data = await prisma.todo.update({
             where:{
-                id: req.params.id
+                id,
             },
             data: {
-                ...req.body,
+                ...body,
                 updateAt: new Date(),
             },
         });
@@ -99,7 +101,27 @@ export const update = async (req, res, next) =>{
     }
 };
 
-export const remove = (req, res, next) =>{
-    res.json({})
+export const remove = async (req, res, next) =>{
+    const {params = {}} = req;
+    const {id = ''} = params;
+
+    try{
+        const data = await prisma.todo.delete({
+            where :{
+                id,
+            },
+        });
+
+        if(data === null){
+            return next({
+                message: 'todo not found',
+                status: 404
+            });
+        };
+
+        res.status(204).end();
+    } catch (error){
+        next(error);
+    }
 };
 

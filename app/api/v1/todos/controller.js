@@ -45,14 +45,30 @@ export const all = async (req, res, next) => {
     }
 };
 
-export const read = (req, res, next) =>{
+export const read = async (req, res, next) =>{
     const {params = {}} = req;
     const {id = ''} = params;
-    res.json({
-        data:{
-            id
+
+    try{
+        const data = await prisma.todo.findUnique({
+            where: {
+                id,
+            },
+        });
+
+        if(data === null){
+            return next({
+                message: 'todo not found',
+                status: 404
+            });
         }
-    });
+
+        res.json({
+            data,
+        });
+    } catch (error){
+        next(error);
+    }
 };
 
 export const update = (req, res, next) =>{

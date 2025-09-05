@@ -71,8 +71,32 @@ export const read = async (req, res, next) =>{
     }
 };
 
-export const update = (req, res, next) =>{
-    res.json({})
+export const update = async (req, res, next) =>{
+    
+    try{
+        const data = await prisma.todo.update({
+            where:{
+                id: req.params.id
+            },
+            data: {
+                ...req.body,
+                updateAt: new Date(),
+            },
+        });
+
+        if (data === null){
+            return next({
+                message: 'todo not found',
+                status: 404
+            });
+        }
+
+        res.json({
+            data,
+        });
+    } catch (error){
+        next(error);
+    }
 };
 
 export const remove = (req, res, next) =>{

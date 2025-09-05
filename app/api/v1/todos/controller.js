@@ -1,23 +1,48 @@
 import { meta } from "@eslint/js";
+import { prisma } from '../../../database.js';
+import { parsePaginationParams } from '../../utils.js';
 
-export const create = (req, res, next) =>{
+export const create = async (req, res, next) =>{
     const {body = {}} = req;
 
-    res.json({
-        data: body
-    });
+    try{
+        const data = await prisma.todo.create({
+            data: body
+        });
+
+        res.json({
+            data: body
+        });
+    } catch (error){
+        next(error);
+    }   
 };
 
-export const all = (req, res, next) =>{
+export const all = async (req, res, next) => {
     const {query = {}} = req;
-    const {limit = 10, offset = 0} = query;
+    const {limit, offset} = parsePaginationParams(query);
 
-    res.json({
-        meta:{
-            limit,
-            offset,
-        },
-    });
+    try{
+        const [data, total] = await Promise.all([
+
+            prisma.todo.findMany({
+            skip: offset,
+            take: limit
+        }),
+        prisma.todo.count()
+        ]);
+
+        res.json({
+            data,
+            meta : {
+                limit,
+                offset,
+                total
+            },
+        });
+    } catch (error){
+        next(error);
+    }
 };
 
 export const read = (req, res, next) =>{

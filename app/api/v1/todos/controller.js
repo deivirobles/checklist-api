@@ -1,6 +1,6 @@
-import { meta } from "@eslint/js";
+
 import { prisma } from '../../../database.js';
-import { parsePaginationParams } from '../../utils.js';
+import { parsePaginationParams} from '../../../utils.js';
 
 export const create = async (req, res, next) =>{
     const {body = {}} = req;
@@ -46,29 +46,12 @@ export const all = async (req, res, next) => {
 };
 
 export const read = async (req, res, next) =>{
-    const {params = {}} = req;
-    const {id = ''} = params;
+    const { locals = {} } = res;
+    const { data } = locals;
 
-    try{
-        const data = await prisma.todo.findUnique({
-            where: {
-                id,
-            },
-        });
-
-        if(data === null){
-            return next({
-                message: 'todo not found',
-                status: 404
-            });
-        }
-
-        res.json({
-            data,
-        });
-    } catch (error){
-        next(error);
-    }
+    res.json({
+        data,
+    });
 };
 
 export const update = async (req, res, next) =>{
@@ -86,13 +69,6 @@ export const update = async (req, res, next) =>{
             },
         });
 
-        if (data === null){
-            return next({
-                message: 'todo not found',
-                status: 404
-            });
-        }
-
         res.json({
             data,
         });
@@ -106,20 +82,38 @@ export const remove = async (req, res, next) =>{
     const {id = ''} = params;
 
     try{
-        const data = await prisma.todo.delete({
+        await prisma.todo.delete({
             where :{
+                id,
+            },
+        });        
+
+        res.status(204).end();
+    } catch (error){
+        next(error);
+    }
+};
+
+export const id = async (req, res, next) => {
+    const {params = {}} = req;
+    const {id = ''} = params;
+
+    try{
+        const data = await prisma.todo.findUnique({
+            where: {
                 id,
             },
         });
 
         if(data === null){
-            return next({
+            next({
                 message: 'todo not found',
                 status: 404
             });
-        };
-
-        res.status(204).end();
+        } else {
+            res.locals.data = data;
+            next();
+        }
     } catch (error){
         next(error);
     }
